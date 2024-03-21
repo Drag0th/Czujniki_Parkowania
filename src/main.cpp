@@ -6,8 +6,8 @@ void measureDistance();
 void setSystem(int distance);
 
 // ultrasonic sensor defines/variables
-#define sensor0_trig_pin 14
-#define sensor0_echo_pin 15
+#define sensor0_trig_pin 5
+#define sensor0_echo_pin 6
 #define sensor1_trig_pin 16
 #define sensor1_echo_pin 17
 #define sensor2_trig_pin 18
@@ -19,7 +19,7 @@ long average_duration;
 int distance;
 
 // led strip defines
-#define LED_PIN 13
+#define LED_PIN 12
 #define NUM_LEDS 32
 #define CHIPSET WS2812
 #define COLOR_ORDER RGB
@@ -59,6 +59,8 @@ void loop()
 
 long measureTime(int echo_pin, int trig_pin)
 {
+  digitalWrite(trig_pin, LOW);
+  delayMicroseconds(2);
   digitalWrite(trig_pin, HIGH);
   delayMicroseconds(10);
   digitalWrite(trig_pin, LOW);
@@ -67,55 +69,97 @@ long measureTime(int echo_pin, int trig_pin)
 void measureDistance()
 {
   duration[0] = measureTime(sensor0_echo_pin, sensor0_trig_pin);
-  duration[1] = measureTime(sensor1_echo_pin, sensor1_trig_pin);
-  duration[2] = measureTime(sensor2_echo_pin, sensor2_trig_pin);
-  duration[3] = measureTime(sensor3_echo_pin, sensor3_trig_pin);
-  for (int i = 0; i < 4; i++)
-  {
-    average_duration = average_duration + duration[i];
-  }
+  // duration[1] = measureTime(sensor1_echo_pin, sensor1_trig_pin);
+  // duration[2] = measureTime(sensor2_echo_pin, sensor2_trig_pin);
+  // duration[3] = measureTime(sensor3_echo_pin, sensor3_trig_pin);
+  // for (int i = 0; i < 4; i++)
+  //{
+  average_duration = duration[0];
+  //}
   distance = average_duration * 0.034 / 2;
 }
 
 void setSystem(int distance)
 {
   // red
-  if (distance > 0 && distance < 50)
+  FastLED.clear();
+  if (distance > 30 && distance < 40)
   {
-    for (int i = 0; i <= 7; i++)
+    for (int i = 0; i <= 1; i++)
     {
       leds[i] = CRGB(252, 3, 3);
     }
-    analogWrite(BUZZER_PIN, 200);
+    analogWrite(BUZZER_PIN, 0);
+    delay(500);
+    analogWrite(BUZZER_PIN, 50);
+    delay(100);
+    analogWrite(BUZZER_PIN, 0);
   }
   // orange
-  else if (distance > 50 && distance < 100)
+  else if (distance > 20 && distance < 30)
   {
-    for (int i = 8; i <= 15; i++)
+    FastLED.clear();
+    for (int i = 0; i <= 1; i++)
+    {
+      leds[i] = CRGB(252, 3, 3);
+    }
+    for (int i = 2; i <= 3; i++)
     {
       leds[i] = CRGB(252, 186, 3);
     }
-    analogWrite(BUZZER_PIN, 150);
+
+    analogWrite(BUZZER_PIN, 0);
+    delay(400);
+    analogWrite(BUZZER_PIN, 100);
+    delay(100);
+    analogWrite(BUZZER_PIN, 0);
   }
   // yellow
-  else if (distance > 100 && distance < 150)
+  else if (distance > 10 && distance < 20)
   {
-    for (int i = 16; i <= 23; i++)
+    FastLED.clear();
+    for (int i = 0; i <= 1; i++)
+    {
+      leds[i] = CRGB(252, 3, 3);
+    }
+    for (int i = 2; i <= 3; i++)
+    {
+      leds[i] = CRGB(252, 186, 3);
+    }
+    for (int i = 4; i <= 5; i++)
     {
       leds[i] = CRGB(223, 252, 3);
     }
-    analogWrite(BUZZER_PIN, 100);
+    analogWrite(BUZZER_PIN, 0);
+    delay(300);
+    analogWrite(BUZZER_PIN, 200);
+    delay(100);
+    analogWrite(BUZZER_PIN, 0);
   }
   // green
-  else if (distance > 150 && distance < 200)
+  else if (distance > 0 && distance < 10)
   {
-    for (int i = 24; i <= 31; i++)
+    FastLED.clear();
+    for (int i = 0; i <= 1; i++)
+    {
+      leds[i] = CRGB(252, 3, 3);
+    }
+    for (int i = 2; i <= 3; i++)
+    {
+      leds[i] = CRGB(252, 186, 3);
+    }
+    for (int i = 4; i <= 5; i++)
+    {
+      leds[i] = CRGB(223, 252, 3);
+    }
+    for (int i = 6; i <= 7; i++)
     {
       leds[i] = CRGB(65, 252, 3);
     }
-    analogWrite(BUZZER_PIN, 50);
-  }
-  // too far > 2m
+
+    analogWrite(BUZZER_PIN, 250);
+    }
+  // too far > 50cm
   else
   {
     FastLED.clear();
