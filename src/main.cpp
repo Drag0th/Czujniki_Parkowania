@@ -6,10 +6,10 @@ void measureDistance();
 void setSystem(int distance);
 
 // ultrasonic sensor defines/variables
-#define sensor0_trig_pin 5
+#define sensor0_trig_pin 7
 #define sensor0_echo_pin 6
-#define sensor1_trig_pin 16
-#define sensor1_echo_pin 17
+#define sensor1_trig_pin 0
+#define sensor1_echo_pin 5
 #define sensor2_trig_pin 18
 #define sensor2_echo_pin 19
 #define sensor3_trig_pin 20
@@ -19,7 +19,7 @@ long average_duration;
 int distance;
 
 // led strip defines
-#define LED_PIN 12
+#define LED_PIN 8
 #define NUM_LEDS 32
 #define CHIPSET WS2812
 #define COLOR_ORDER RGB
@@ -48,13 +48,17 @@ void setup()
   FastLED.setBrightness(BRIGHTNESS);
 
   pinMode(BUZZER_PIN, OUTPUT);
+  pinMode(9, OUTPUT);
 }
 
 void loop()
 {
+  digitalWrite(9, LOW);
   measureDistance();
   setSystem(distance);
   FastLED.show();
+  digitalWrite(9, HIGH);
+  delay(100);
 }
 
 long measureTime(int echo_pin, int trig_pin)
@@ -69,12 +73,13 @@ long measureTime(int echo_pin, int trig_pin)
 void measureDistance()
 {
   duration[0] = measureTime(sensor0_echo_pin, sensor0_trig_pin);
-  // duration[1] = measureTime(sensor1_echo_pin, sensor1_trig_pin);
+  delayMicroseconds(10);
+  duration[1] = measureTime(sensor1_echo_pin, sensor1_trig_pin);
   // duration[2] = measureTime(sensor2_echo_pin, sensor2_trig_pin);
   // duration[3] = measureTime(sensor3_echo_pin, sensor3_trig_pin);
   // for (int i = 0; i < 4; i++)
   //{
-  average_duration = duration[0];
+  average_duration = (duration[0] + duration[1]) / 2;
   //}
   distance = average_duration * 0.034 / 2;
 }
@@ -158,7 +163,7 @@ void setSystem(int distance)
     }
 
     analogWrite(BUZZER_PIN, 250);
-    }
+  }
   // too far > 50cm
   else
   {
